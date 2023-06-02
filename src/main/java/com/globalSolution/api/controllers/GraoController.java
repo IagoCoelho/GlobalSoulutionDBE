@@ -40,18 +40,18 @@ public class GraoController {
     GraoRepository repository;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<Grao>>> index (@RequestParam(required = false) String grao, @PageableDefault(size = 5) Pageable pageable){
+    public ResponseEntity<CollectionModel<EntityModel<Grao>>> index(@RequestParam(required = false) String name, @PageableDefault(size = 5) Pageable pageable){
 
         List<EntityModel<Grao>> graosModel = new ArrayList<>();
-        
-        if(grao == null){
+
+        if (name == null) {
             List<Grao> graos = repository.findAll(pageable).getContent();
-            for(Grao grao : graos){
+            for (Grao grao : graos) {
                 graosModel.add(getGraoModel(grao));
             }
         } else {
-            List<Grao> graos = repository.findByNameContaining(grao, pageable).getContent();
-            for (Grao grao : graos){
+            List<Grao> graos = repository.findByNameContaining(name, pageable).getContent();
+            for (Grao grao : graos) {
                 graosModel.add(getGraoModel(grao));
             }
         }
@@ -66,7 +66,7 @@ public class GraoController {
     public ResponseEntity<EntityModel<Grao>> create(@RequestBody @valid Grao grao){
         log.info("Cadastrando grão: " + grao);
         Grao postObj = repository.save(grao);
-        EntityModel<Grao> graoModel = getGraoModel(postObj);
+        EntityModel<Grao> graoModel = getGrao(postObj);
         graoModel.add(getSelfLink());
         graoModel.add(getupdateLink(postObj.getId()));
         graoModel.add(getDeleteLink(postObj.getId()));
@@ -77,7 +77,7 @@ public class GraoController {
     public ResponseEntity<EntityModel<Grao>> show(@PathVariable Long id){
         log.info("Buscando grao com id " + id);
         Grao grao = getGrao(id);
-        EntityModel<Grao> GraoModel = getGraoModel(grao);
+        EntityModel<Grao> GraoModel = getGrao(grao);
         graoModel.add(getSelfLink());
         graoModel.add(getUpdateLink(id));
         graoModel.add(getDeleteLink(id));
@@ -97,7 +97,7 @@ public class GraoController {
         getGrao(id);
         grao.setId(id);
         Grao putObj = repository.save(grao);
-        EntityModel<Grao> graoModel = getGraoModel(putObj);
+        EntityModel<Grao> graoModel = getGrao(putObj);
         graoModel.add(getSelfLink());
         graoModel.add(getDeleteLink(putObj.getId()));
         return ResponseEntity.ok(grao);

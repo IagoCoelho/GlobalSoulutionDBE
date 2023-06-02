@@ -1,16 +1,40 @@
 package com.globalSolution.api.controllers;
 
-import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.text.html.parser.Entity;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.globalSolution.api.models.TipoClima;
+import com.globalSolution.api.repository.TipoClimaRepository;
 
 @RestController
 @RequestMapping("/api/clima")
 public class TipoClimaController {
     Logger log = LoggerFactory.getLogger(TipoClimaController.class);
 
-    List<TipoClima> TipoClima = new ArrayList<>();
+    List<TipoClima> clima = new ArrayList<>();
 
     @Autowired
     TipoClimaRepository repository;
@@ -21,13 +45,13 @@ public class TipoClimaController {
         List<EntityModel<TipoClima>> TipoClimasModel = new ArrayList<>();
         
         if(TipoClima == null){
-            List<TipoClima> TipoClimas = repository.findAll(pageable).getContent();
-            for(TipoClima TipoClima : TipoClimas){
+            List<TipoClima> tipoClimas = repository.findAll(pageable).getContent();
+            for(TipoClima tipoClima : tipoClimas){
                 TipoClimasModel.add(getTipoClimaModel(TipoClima));
             }
         } else {
             List<TipoClima> TipoClimas = repository.findByNameContaining(TipoClima, pageable).getContent();
-            for (TipoClima TipoClima : TipoClimas){
+            for (TipoClima tipoClima : TipoClimas){
                 TipoClimasModel.add(getTipoClimaModel(TipoClima));
             }
         }
