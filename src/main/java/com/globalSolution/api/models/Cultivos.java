@@ -20,9 +20,6 @@ public class Cultivos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    private String ds_resultados;
-
     @NotNull
     @ManyToOne
     private String Grao grao;
