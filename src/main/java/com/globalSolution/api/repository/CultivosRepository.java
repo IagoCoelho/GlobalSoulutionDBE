@@ -1,6 +1,6 @@
 package com.globalSolution.api.repository;
 
 public class CultivosRepository {
-    Page<Grao> findByNameContaining(String grao, Pageable pageable);
+    Page<Cultivos> findById(Int id, Pageable pageable);
 
 }

@@ -26,23 +26,25 @@ public class CultivosController {
 
     @Autowired // IoD IoC
     CultivoRepository repository;
+    GraoRepository graoRepository;
+
 
     @Autowired
     PagedResourcesAssembler<Object> assembler;
 
     @GetMapping
     @ApiOperation("Retorna uma lista de cultivos")
-    public ResponseEntity<CollectionModel<EntityModel<Cultivo>>> index(@RequestParam(required = false) Integer docs, @PageableDefault(size = 5) Pageable pageable){
+    public ResponseEntity<CollectionModel<EntityModel<Cultivo>>> index(@RequestParam(required = false) String grao, @PageableDefault(size = 5) Pageable pageable){
 
         List<EntityModel<Cultivo>> cultivosModel = new ArrayList<>();
 
-        if (docs == null) {
+        if (grao == null) {
             List<Cultivo> cultivos = repository.findAll(pageable).getContent();
             for (Cultivo cultivo : cultivos) {
                 cultivosModel.add(getCultivoModel(cultivo));
             }
         } else {
-            List<Cultivo> cultivos = repository.findByDocsContaining(docs, pageable).getContent();
+            List<Cultivo> cultivos = repository.findById(id, pageable).getContent();
             for (Cultivo cultivo : cultivos) {
                 cultivosModel.add(getCultivoModel(cultivo));
             }
