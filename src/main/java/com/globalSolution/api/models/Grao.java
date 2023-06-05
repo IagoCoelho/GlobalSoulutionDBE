@@ -1,12 +1,19 @@
 package com.globalSolution.api.models;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,10 +34,6 @@ public class Grao {
     private String ds_grao;
     @OneToMany(mappedBy = "grao")
     private List<Cultivos> cultivos;
-
-    protected Grao(){
-
-    }
 
     public Grao(Long id_grao, String nm_grao, String ds_grao){
         this.id_grao = id_grao;
