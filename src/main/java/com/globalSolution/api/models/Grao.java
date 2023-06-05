@@ -8,7 +8,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
+@Table(name = "TB_GRAO")
 public class Grao {
 
     @Id
@@ -21,6 +25,8 @@ public class Grao {
     @NotBlank
     @Size (max = 255)
     private String ds_grao;
+    @OneToMany(mappedBy = "grao")
+    private List<Cultivos> cultivos;
 
     protected Grao(){
 

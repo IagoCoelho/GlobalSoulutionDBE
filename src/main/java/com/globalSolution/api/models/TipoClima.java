@@ -8,16 +8,24 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
+@Table(name = "TB_TIPO_CLIMA")
 public class TipoClima {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private Long id_clima;
+
     @NotBlank
     @Size(max = 255)
     private String ds_clima;
+
+    @OneToMany(mappedBy = "tipoClima")
+    private List<Cultivos> cultivos;
 
     protected TipoClima(){
     }

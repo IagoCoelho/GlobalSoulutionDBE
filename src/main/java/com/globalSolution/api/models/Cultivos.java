@@ -15,20 +15,25 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @Builder
+@Table(name = "TB_CULTIVOS")
 public class Cultivos {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
     @ManyToOne
-    private String Grao grao;
+    @JoinColumn(name = "id")
+    private Grao grao;
 
     @NotNull
     @ManyToOne
-    private String TipoClima tipoClima;
+    @JoinColumn(name = "id")
+    private TipoClima tipoClima;
 
     @NotNull
     @ManyToOne
-    private String TipoSolo tipoSolo;
+    @JoinColumn(name = "id")
+    private TipoSolo tipoSolo;
 }
