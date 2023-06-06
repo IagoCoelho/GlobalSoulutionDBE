@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.globalSolution.api.models.TipoSolo;
+
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +58,8 @@ public class TipoSoloController {
     @PostMapping
     @ApiOperation("Cria um novo tipo de solo")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Tipo de solo cadastrado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição")
+        @ApiResponse(code = 201, message = "Tipo de solo cadastrado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
     public ResponseEntity<EntityModel<TipoSolo>> create(@RequestBody @Valid TipoSolo tipoSolo){
         log.info("Cadastrando tipo de solo: " + tipoSolo);
@@ -72,8 +74,8 @@ public class TipoSoloController {
     @GetMapping("{id}")
     @ApiOperation("Retorna os detalhes de um tipo de solo")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Tipo de solo encontrado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Tipo de solo não encontrado")
+        @ApiResponse(code = 200, message = "Tipo de solo encontrado com sucesso"),
+        @ApiResponse(code = 404, message = "Tipo de solo não encontrado")
     })
     public ResponseEntity<EntityModel<TipoSolo>> show(@PathVariable Long id){
         log.info("Buscando tipo de solo com id " + id);
@@ -88,8 +90,8 @@ public class TipoSoloController {
     @DeleteMapping("{id}")
     @ApiOperation("Exclui um tipo de solo")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Tipo de solo excluído com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Tipo de solo não encontrado")
+        @ApiResponse(code = 204, message = "Tipo de solo excluído com sucesso"),
+        @ApiResponse(code = 404, message = "Tipo de solo não encontrado")
     })
     public ResponseEntity<TipoSolo> destroy(@PathVariable Long id){
         log.info("Apagando tipo de solo com id " + id);
@@ -100,9 +102,9 @@ public class TipoSoloController {
     @PutMapping("{id}")
     @ApiOperation("Atualiza um tipo de solo")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Tipo de solo atualizado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição"),
-        @ApiResponse(responseCode = "404", description = "Tipo de solo não encontrado")
+        @ApiResponse(code = 200, message = "Tipo de solo atualizado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
+        @ApiResponse(code = 404, message = "Tipo de solo não encontrado")
     })
     public ResponseEntity<EntityModel<TipoSolo>> update(@PathVariable Long id, @RequestBody @Valid TipoSolo tipoSolo){
         log.info("Alterando tipo de solo com id " + id);

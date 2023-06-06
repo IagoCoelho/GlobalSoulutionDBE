@@ -56,8 +56,8 @@ public class TipoClimaController {
     @PostMapping
     @ApiOperation("Cria um novo tipo de clima")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Tipo de clima cadastrado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição")
+        @ApiResponse(code = 201, message = "Tipo de clima cadastrado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
     public ResponseEntity<EntityModel<TipoClima>> create(@RequestBody @Valid TipoClima tipoClima){
         log.info("Cadastrando tipo de clima: " + tipoClima);
@@ -72,8 +72,8 @@ public class TipoClimaController {
     @GetMapping("{id}")
     @ApiOperation("Retorna os detalhes de um tipo de clima")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Tipo de clima encontrado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Tipo de clima não encontrado")
+        @ApiResponse(code = 200, message = "Tipo de clima encontrado com sucesso"),
+        @ApiResponse(code = 404, message = "Tipo de clima não encontrado")
     })
     public ResponseEntity<EntityModel<TipoClima>> show(@PathVariable Long id){
         log.info("Buscando tipo de clima com id " + id);
@@ -88,8 +88,8 @@ public class TipoClimaController {
     @DeleteMapping("{id}")
     @ApiOperation("Exclui um tipo de clima")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Tipo de clima excluído com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Tipo de clima não encontrado")
+        @ApiResponse(code = 204, message = "Tipo de clima excluído com sucesso"),
+        @ApiResponse(code = 404, message = "Tipo de clima não encontrado")
     })
     public ResponseEntity<TipoClima> destroy(@PathVariable Long id){
         log.info("Apagando tipo de clima com id " + id);
@@ -100,9 +100,9 @@ public class TipoClimaController {
     @PutMapping("{id}")
     @ApiOperation("Atualiza um tipo de clima")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Tipo de clima atualizado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição"),
-        @ApiResponse(responseCode = "404", description = "Tipo de clima não encontrado")
+        @ApiResponse(code = 200, message = "Tipo de clima atualizado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
+        @ApiResponse(code = 404, message = "Tipo de clima não encontrado")
     })
     public ResponseEntity<EntityModel<TipoClima>> update(@PathVariable Long id, @RequestBody @Valid TipoClima tipoClima){
         log.info("Alterando tipo de clima com id " + id);

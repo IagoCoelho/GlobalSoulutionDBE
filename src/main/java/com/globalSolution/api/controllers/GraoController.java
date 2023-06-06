@@ -57,8 +57,8 @@ public class GraosController {
     @PostMapping
     @ApiOperation("Cria um novo grão")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Grão cadastrado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição")
+        @ApiResponse(code = 201, message = "Grão cadastrado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
     public ResponseEntity<EntityModel<Grao>> create(@RequestBody @Valid Grao grao){
         log.info("Cadastrando grão: " + grao);
@@ -73,8 +73,8 @@ public class GraosController {
     @GetMapping("{id}")
     @ApiOperation("Retorna os detalhes de um grão")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Grão encontrado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Grão não encontrado")
+        @ApiResponse(code = 200, message = "Grão encontrado com sucesso"),
+        @ApiResponse(code = 404, message = "Grão não encontrado")
     })
     public ResponseEntity<EntityModel<Grao>> show(@PathVariable Long id){
         log.info("Buscando grão com id " + id);
@@ -89,8 +89,8 @@ public class GraosController {
     @DeleteMapping("{id}")
     @ApiOperation("Exclui um grão")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Grão excluído com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Grão não encontrado")
+        @ApiResponse(code = 204, message = "Grão excluído com sucesso"),
+        @ApiResponse(code = 404, message = "Grão não encontrado")
     })
     public ResponseEntity<Grao> destroy(@PathVariable Long id){
         log.info("Apagando grão com id " + id);
@@ -101,9 +101,9 @@ public class GraosController {
     @PutMapping("{id}")
     @ApiOperation("Atualiza um grão")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Grão atualizado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição"),
-        @ApiResponse(responseCode = "404", description = "Grão não encontrado")
+        @ApiResponse(code = 200, message = "Grão atualizado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
+        @ApiResponse(code = 404, message = "Grão não encontrado")
     })
     public ResponseEntity<EntityModel<Grao>> update(@PathVariable Long id, @RequestBody @Valid Grao grao){
         log.info("Alterando grão com id " + id);

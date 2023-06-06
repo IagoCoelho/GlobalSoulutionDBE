@@ -80,8 +80,8 @@ public class CultivosController {
     @PostMapping
     @ApiOperation("Cria um novo cultivo")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Cultivos cadastrado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Erro na validação dos dados da requisição")
+        @ApiResponse(code = 201, message = "Cultivos cadastrado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
     public ResponseEntity<EntityModel<Cultivos>> create(@RequestBody @Valid Cultivos cultivo){
         log.info("Cadastrando cultivo: " + cultivo);
