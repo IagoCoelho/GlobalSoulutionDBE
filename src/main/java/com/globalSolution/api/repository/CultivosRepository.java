@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.globalSolution.api.models.Cultivos;
 
-public class CultivosRepository {
+public interface CultivosRepository extends JpaRepository<Cultivos, Long>{
     Page<Cultivos> findByIdPageable(String clima, Pageable pageable);    
 
 }

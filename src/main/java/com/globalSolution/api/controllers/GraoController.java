@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,8 +22,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.globalSolution.api.models.Grao;
+import com.globalSolution.api.repository.GraoRepository;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -27,8 +35,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/graos")
-public class GraosController {
-    Logger log = LoggerFactory.getLogger(GraosController.class);
+public class GraoController {
+    Logger log = LoggerFactory.getLogger(GraoController.class);
 
     List<Grao> graos = new ArrayList<>();
 
