@@ -32,23 +32,26 @@ public class DatabaseSeeder implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        graoRepository.saveAll(List.of(
-            new Grao(1L, "soja", "A soja se desenvolve melhor em climas quentes e temperaturas médias entre 20°C e 30°C. O solo ideal para a soja deve ser bem drenado, fértil e rico em matéria orgânica. A soja pode ser cultivada em uma variedade de tipos de solo."),
-            new Grao(2L, "Feijao", "O feijão prefere climas quentes e temperaturas entre 20°C e 30°C. O solo ideal para o plantio de feijão deve ser bem drenado, fértil e rico em matéria orgânica. O pH do solo ideal para o feijão varia entre 6,0 e 7,0.")
-        ));
+        Grao g1 = new Grao(1L, " ", " ", null);
+        Grao g2 = new Grao(2L, " ", " ", null);
+        Grao g3 = new Grao(3L, " ", " ", null);
+        graoRepository.saveAll(List.of(g1,g2,g3));
         
-        tipoSoloRepository.saveAll(List.of(
-            new TipoSolo(1L, "vermelho", "Solo com pH ácido"),
-            new TipoSolo(2L, "beje", "Solo alagado")
-        ));
+        TipoSolo ts1 = new TipoSolo(1L, "vermelho", "Solo com pH ácido", null);
+        TipoSolo ts2 = new TipoSolo(2L, "vermelho", "Solo com pH ácido", null);
+        TipoSolo ts3 = new TipoSolo(3L, "vermelho", "Solo com pH ácido", null);
+        tipoSoloRepository.saveAll(List.of(ts1,ts2,ts3));
         
-        tipoClimaRepository.saveAll(List.of(
-            new TipoClima(1L, "Clima tropical úmido"),
-            new TipoClima(2L, "Clima seco e quente")
-        ));
+        TipoClima tc1 = new TipoClima(1L, "Clima tropical úmido", null);
+        TipoClima tc2 = new TipoClima(1L, "Clima tropical úmido", null);
+        TipoClima tc3 = new TipoClima(2L, "Clima seco e quente", null);
+        tipoClimaRepository.saveAll(List.of(tc1,tc2,tc3));
         
-        cultivosRepository.saveAll(List.of(
-            new Cultivos(1L, getGrao(1L), getTipoClima(1L), getTipoSolo(1L))
-        ));
+        Cultivos.builder().grao(g1).tipoClima(tc1).tipoSolo(ts1);
+        Cultivos.builder().grao(g2).tipoClima(tc2).tipoSolo(ts2);
+        Cultivos.builder().grao(g3).tipoClima(tc3).tipoSolo(ts3);
+        cultivosRepository.saveAll(List.of());
+        
     }
+
 }
