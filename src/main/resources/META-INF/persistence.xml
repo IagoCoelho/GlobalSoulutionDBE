@@ -4,7 +4,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@oracle.fiap.com.br:15,21:orcl"/>
             <property name="javax.persistence.jdbc.user" value="RM95355"/>
             <property name="javax.persistence.jdbc.password" value="250694"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.OracleDialect"/>

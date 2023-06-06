@@ -1,4 +1,4 @@
-package in.one.in_one.models;
+package com.globalSolution.api.models;
 
 public record RestError(String message) {
 
