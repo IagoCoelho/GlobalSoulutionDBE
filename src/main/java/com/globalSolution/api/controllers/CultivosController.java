@@ -49,34 +49,21 @@ public class CultivosController {
     CultivosRepository repository;
     GraoRepository graoRepository;
 
-
     @Autowired
     PagedResourcesAssembler<Object> assembler;
 
     @GetMapping
     @ApiOperation("Retorna uma lista de cultivos")
     public ResponseEntity<List<Cultivos>> index(@RequestParam(required = false) Cultivos cultivos, Pageable pageable) {
-
         Page<Cultivos> CultivosPage;
-
         if (cultivos == null) {
-
             CultivosPage = repository.findAll(pageable);
-
         } else {
-
-            CultivosPage = repository.findByNameContaining(grao, pageable);
-
+            CultivosPage = repository.findByNameContaining(cultivos, pageable);
         }
-
-       
-
-        List<Grao> graos = graosPage.getContent();
-
-        return ResponseEntity.ok(graos);
-
+        List<Cultivos> cultivo = CultivosPage.getContent();
+        return ResponseEntity.ok(cultivo);
     }
-
 
     @PostMapping
     @ApiOperation("Cria um novo cultivo")
@@ -85,7 +72,7 @@ public class CultivosController {
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
     public ResponseEntity<Cultivos> create(@RequestBody @Valid Cultivos cultivo){
-        log.info("cadastrando conta: " + cultivo);
+        log.info("cadastrando cultivos: " + cultivo);
         repository.save(cultivo);
         return ResponseEntity.status(HttpStatus.CREATED).body(cultivo);
     }

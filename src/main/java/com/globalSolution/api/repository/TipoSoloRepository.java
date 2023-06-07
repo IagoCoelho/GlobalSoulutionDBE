@@ -4,8 +4,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.globalSolution.api.models.Grao;
 import com.globalSolution.api.models.TipoSolo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,17 +16,14 @@ public interface TipoSoloRepository extends JpaRepository<TipoSolo, Long>{
     Page<TipoSolo> findAll(org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable pageable);
 
 
-
-
     public TipoSoloRepository(EntityManager entityManager) {
-
         this.entityManager = entityManager;
     }
 
-    public void createJPQL(Grao gra) {
+    public default void createJPQL(TipoSolo tipoSolo) {
         try {
             entityManager.getTransaction().begin();
-            entityManager.persist(gra);
+            entityManager.persist(tipoSolo);
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             entityManager.getTransaction().rollback();
@@ -38,9 +33,9 @@ public interface TipoSoloRepository extends JpaRepository<TipoSolo, Long>{
 
     Page<TipoSolo> findByNameContaining(TipoSolo tipoSolo, org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable pageable);
 
-    public default Iterable<Grao> findByLikeJPQL(String tipoSolo) {
-        String jpql = "SELECT d FROM TB_TIPOSOLO d WHERE d.grao LIKE :tipoSolo";
-        var query = entityManager.createQuery(jpql, Grao.class)
+    public default Iterable<TipoSolo> findByLikeJPQL(String tipoSolo) {
+        String jpql = "SELECT d FROM TB_TIPO_SOLO d WHERE d.TIPO_SOLO LIKE :tipoSolo";
+        var query = entityManager.createQuery(jpql, TipoSolo.class)
             .setParameter("tipoSolo", "%" + tipoSolo + "%")
             .setHint("jakarta.persistence.query.timeout", 60000);
         var tiposSolo = query.getResultList();
