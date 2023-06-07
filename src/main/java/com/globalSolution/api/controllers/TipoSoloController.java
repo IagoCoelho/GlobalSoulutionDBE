@@ -3,6 +3,7 @@ package com.globalSolution.api.controllers;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.data.domain.Page;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -32,7 +34,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.globalSolution.api.models.TipoSolo;
 import com.globalSolution.api.repository.TipoSoloRepository;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,25 +52,19 @@ public class TipoSoloController {
 
     @GetMapping
     @ApiOperation("Retorna uma lista de tipos de solo")
-    public ResponseEntity<CollectionModel<EntityModel<TipoSolo>>> index(@RequestParam(required = false) String solo, @PageableDefault(size = 5) Pageable pageable){
+    public ResponseEntity<List<TipoSolo>> index(@RequestParam(required = false) TipoSolo tipoSolo, Pageable pageable) {
 
-        List<EntityModel<TipoSolo>> tiposSoloModel = new ArrayList<>();
+        Page<TipoSolo> tipoSoloPage;
 
-        if (solo == null) {
-            List<TipoSolo> tiposSolo = repository.findAll(pageable).getContent();
-            for (TipoSolo tipoSolo : tiposSolo) {
-                tiposSoloModel.add(getTipoSoloModel(tipoSolo));
-            }
+        if (tipoSolo == null) {
+            tipoSoloPage = repository.findAll(pageable);
         } else {
-            List<TipoSolo> tiposSolo = repository.findByNameContaining(solo, pageable).getContent();
-            for (TipoSolo tipoSolo : tiposSolo) {
-                tiposSoloModel.add(getTipoSoloModel(tipoSolo));
-            }
+            tipoSoloPage = repository.findByNameContaining(tipoSolo, pageable);
         }
 
-        CollectionModel<EntityModel<TipoSolo>> collectionModel = CollectionModel.of(tiposSoloModel);
-        collectionModel.add(getSelfLink());
-        return ResponseEntity.ok(collectionModel);
+        List<TipoSolo> tipoClimas = tipoSoloPage.getContent();
+
+        return ResponseEntity.ok(tipoClimas);
     }
 
     @PostMapping
@@ -78,14 +73,10 @@ public class TipoSoloController {
         @ApiResponse(code = 201, message = "Tipo de solo cadastrado com sucesso"),
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
-    public ResponseEntity<EntityModel<TipoSolo>> create(@RequestBody @Valid TipoSolo tipoSolo){
-        log.info("Cadastrando tipo de solo: " + tipoSolo);
-        TipoSolo postObj = repository.save(tipoSolo);
-        EntityModel<TipoSolo> tipoSoloModel = getTipoSoloModel(postObj);
-        tipoSoloModel.add(getSelfLink());
-        tipoSoloModel.add(getUpdateLink(postObj.getId()));
-        tipoSoloModel.add(getDeleteLink(postObj.getId()));
-        return ResponseEntity.created(tipoSoloModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(tipoSoloModel);
+    public EntityModel<TipoSolo> create(@RequestBody @Valid TipoSolo tipoSolo) {
+        log.info("Cadastrando tipo solo: " + tipoSolo);
+        repository.save(tipoSolo);
+        return EntityModel.of(tipoSolo);
     }
 
     @GetMapping("{id}")
@@ -94,14 +85,9 @@ public class TipoSoloController {
         @ApiResponse(code = 200, message = "Tipo de solo encontrado com sucesso"),
         @ApiResponse(code = 404, message = "Tipo de solo não encontrado")
     })
-    public ResponseEntity<EntityModel<TipoSolo>> show(@PathVariable Long id){
-        log.info("Buscando tipo de solo com id " + id);
-        TipoSolo tipoSolo = getTipoSolo(id);
-        EntityModel<TipoSolo> tipoSoloModel = getTipoSoloModel(tipoSolo);
-        tipoSoloModel.add(getSelfLink());
-        tipoSoloModel.add(getUpdateLink(id));
-        tipoSoloModel.add(getDeleteLink(id));
-        return ResponseEntity.ok(tipoSoloModel);
+    public TipoSolo show(@PathVariable Long id) {
+        log.info("Buscando tipo solo com id " + id);
+        return getTipoSolo(id);
     }
 
     @DeleteMapping("{id}")
@@ -123,19 +109,16 @@ public class TipoSoloController {
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
         @ApiResponse(code = 404, message = "Tipo de solo não encontrado")
     })
-    public ResponseEntity<EntityModel<TipoSolo>> update(@PathVariable Long id, @RequestBody @Valid TipoSolo tipoSolo){
-        log.info("Alterando tipo de solo com id " + id);
-        getTipoSolo(id);
-        tipoSolo.setId(id);
-        TipoSolo putObj = repository.save(tipoSolo);
-        EntityModel<TipoSolo> tipoSoloModel = getTipoSoloModel(putObj);
-        tipoSoloModel.add(getSelfLink());
-        tipoSoloModel.add(getDeleteLink(putObj.getId()));
-        return ResponseEntity.ok(tipoSoloModel);
+    public EntityModel<TipoSolo> update(@PathVariable Long id, @RequestBody @Valid TipoSolo tipoSolo) {
+        log.info("Alterando tipoSolo com id " + id);
+        TipoSolo existingTipoSolo = getTipoSolo(id);
+        existingTipoSolo.setId_tipo_solo(id);;
+        repository.save(existingTipoSolo);
+        return EntityModel.of(existingTipoSolo);
     }
 
     private TipoSolo getTipoSolo(Long id) {
         return repository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo de solo não existe"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tipo solo não existe"));
     }
 }

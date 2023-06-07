@@ -3,11 +3,14 @@ package com.globalSolution.api.controllers;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -29,7 +32,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.globalSolution.api.models.Grao;
 import com.globalSolution.api.repository.GraoRepository;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,23 +52,8 @@ public class GraoController {
     @ApiOperation("Retorna uma lista de grãos")
     public ResponseEntity<CollectionModel<EntityModel<Grao>>> index(@RequestParam(required = false) Integer docs, @PageableDefault(size = 5) Pageable pageable){
 
-        List<EntityModel<Grao>> graosModel = new ArrayList<>();
-
-        if (docs == null) {
-            List<Grao> graos = repository.findAll(pageable).getContent();
-            for (Grao grao : graos) {
-                graosModel.add(getGraoModel(grao));
-            }
-        } else {
-            List<Grao> graos = repository.findByNameContaining(grao, pageable).getContent();
-            for (Grao grao : graos) {
-                graosModel.add(getGraoModel(grao));
-            }
-        }
-
-        CollectionModel<EntityModel<Grao>> collectionModel = CollectionModel.of(graosModel);
-        collectionModel.add(getSelfLink());
-        return ResponseEntity.ok(collectionModel);
+        public List<Grao> index(){
+            return repository.findAll();
 
     }
 
@@ -76,14 +63,10 @@ public class GraoController {
         @ApiResponse(code = 201, message = "Grão cadastrado com sucesso"),
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
-    public ResponseEntity<EntityModel<Grao>> create(@RequestBody @Valid Grao grao){
-        log.info("Cadastrando grão: " + grao);
-        Grao postObj = repository.save(grao);
-        EntityModel<Grao> graoModel = getGraoModel(postObj);
-        graoModel.add(getSelfLink());
-        graoModel.add(getUpdateLink(postObj.getId()));
-        graoModel.add(getDeleteLink(postObj.getId()));
-        return ResponseEntity.created(graoModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(graoModel);
+    public ResponseEntity<Grao> create(@RequestBody @Valid Grao grao){
+        log.info("cadastrando grao: " + grao);
+        repository.save(grao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(grao);
     }
 
     @GetMapping("{id}")
@@ -92,14 +75,9 @@ public class GraoController {
         @ApiResponse(code = 200, message = "Grão encontrado com sucesso"),
         @ApiResponse(code = 404, message = "Grão não encontrado")
     })
-    public ResponseEntity<EntityModel<Grao>> show(@PathVariable Long id){
-        log.info("Buscando grão com id " + id);
-        Grao grao = getGrao(id);
-        EntityModel<Grao> graoModel = getGraoModel(grao);
-        graoModel.add(getSelfLink());
-        graoModel.add(getUpdateLink(id));
-        graoModel.add(getDeleteLink(id));
-        return ResponseEntity.ok(graoModel);
+    public ResponseEntity<Grao> show(@PathVariable Long id){
+        log.info("buscando grao com id " + id);
+        return ResponseEntity.ok(getGrao(id));
     }
 
     @DeleteMapping("{id}")
@@ -109,7 +87,7 @@ public class GraoController {
         @ApiResponse(code = 404, message = "Grão não encontrado")
     })
     public ResponseEntity<Grao> destroy(@PathVariable Long id){
-        log.info("Apagando grão com id " + id);
+        log.info("apagando grao com id " + id);
         repository.delete(getGrao(id));
         return ResponseEntity.noContent().build();
     }
@@ -121,15 +99,12 @@ public class GraoController {
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
         @ApiResponse(code = 404, message = "Grão não encontrado")
     })
-    public ResponseEntity<EntityModel<Grao>> update(@PathVariable Long id, @RequestBody @Valid Grao grao){
-        log.info("Alterando grão com id " + id);
+    public ResponseEntity<Grao> update(@PathVariable Long id, @RequestBody @Valid Grao grao){
+        log.info("alterando grao com id " + id);
         getGrao(id);
         grao.setId(id);
-        Grao putObj = repository.save(grao);
-        EntityModel<Grao> graoModel = getGraoModel(putObj);
-        graoModel.add(getSelfLink());
-        graoModel.add(getDeleteLink(putObj.getId()));
-        return ResponseEntity.ok(graoModel);
+        repository.save(grao);
+        return ResponseEntity.ok(grao);
     }
 
     private Grao getGrao(Long id) {
