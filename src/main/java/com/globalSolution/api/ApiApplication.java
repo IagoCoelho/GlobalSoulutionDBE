@@ -12,23 +12,24 @@ public class ApiApplication {
 
 	public static void main(String[] args) {
 		try {
-            EntityManagerFactory entityManagerFactory = Persistence.
-                    createEntityManagerFactory("TESTEGS-PU");
+            EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("TESTEGS-PU");
             EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-            var customerRepository = new CustomerRepository(entityManager);
-            var tellerRepository = new TellerRepository(entityManager);
+            var graoRepository = new GraoRepository(entityManager);
+            var tipoSoloRepository = new TipoSoloRepository(entityManager);
+            var tipoClimaRepository = new TipoClimaRepository(entityManager);
+            var cultivosRepository = new CultivosRepository(entityManager);
 
-            var novoCustomer = new Customer("Teste", "RuaTeste", 43434, 434334);
-            customerRepository.create(novoCustomer);
-            var customer = customerRepository.findById(1);
+            var novoGrao = new Grao("Teste", "RuaTeste", 43434, 434334);
+            graoRepository.create(novoGrao);
+            var grao = graoRepository.findById(1);
 
-            novoCustomer.setName("Teste2");
-            customerRepository.update(novoCustomer);
-            var customerUpdate = customerRepository.findById(1);
+            novoGrao.setName("Teste2");
+            graoRepository.update(novoGrao);
+            var graoUpdate = graoRepository.findById(1);
 
-            customerRepository.deleteById(1);
-            var customerDeleted = customerRepository.findById(1);
+            graoRepository.deleteById(1);
+            var graoDeleted = graoRepository.findById(1);
 
             entityManager.close();
             entityManagerFactory.close();

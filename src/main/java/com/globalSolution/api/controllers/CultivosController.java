@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -54,92 +54,71 @@ public class CultivosController {
 
     @GetMapping
     @ApiOperation("Retorna uma lista de cultivos")
-    public ResponseEntity<CollectionModel<EntityModel<Cultivos>>> index(@RequestParam(required = false) Int id, @PageableDefault(size = 5) Pageable pageable){
+    public ResponseEntity<List<Cultivos>> index(@RequestParam(required = false) Cultivos cultivo, Pageable pageable) {
+        Page<Cultivos> cultivosPage;
 
-        List<EntityModel<Cultivos>> cultivosModel = new ArrayList<>();
-
-        if (id == null) {
-            List<Cultivos> cultivos = repository.findAll(pageable).getContent();
-            for (Cultivos cultivo : cultivos) {
-                cultivosModel.add(getCultivosModel(cultivo));
-            }
+        if (cultivo == null) {
+            cultivosPage = repository.findAll(pageable);
         } else {
-            List<Cultivos> cultivos = repository.findById(id, pageable).getContent();
-            for (Cultivos cultivo : cultivos) {
-                cultivosModel.add(getCultivoModel(cultivo));
-            }
+            cultivosPage = repository.findByNomeContaining(cultivo.getNome(), pageable);
         }
 
-        CollectionModel<EntityModel<Cultivos>> collectionModel = CollectionModel.of(cultivosModel);
-        collectionModel.add(getSelfLink());
-        return ResponseEntity.ok(collectionModel);
-
+        List<Cultivos> cultivos = cultivosPage.getContent();
+        return ResponseEntity.ok(cultivos);
     }
 
     @PostMapping
     @ApiOperation("Cria um novo cultivo")
     @ApiResponses({
-        @ApiResponse(code = 201, message = "Cultivos cadastrado com sucesso"),
+        @ApiResponse(code = 201, message = "Cultivo cadastrado com sucesso"),
         @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
     })
-    public ResponseEntity<EntityModel<Cultivos>> create(@RequestBody @Valid Cultivos cultivo){
+    public EntityModel<Cultivos> create(@RequestBody @Valid Cultivos cultivo) {
         log.info("Cadastrando cultivo: " + cultivo);
-        Cultivos postObj = repository.save(cultivo);
-        EntityModel<Cultivos> cultivoModel = getCultivoModel(postObj);
-        cultivoModel.add(getSelfLink());
-        cultivoModel.add(getUpdateLink(postObj.getId()));
-        cultivoModel.add(getDeleteLink(postObj.getId()));
-        return ResponseEntity.created(cultivoModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(cultivoModel);
+        repository.save(cultivo);
+        return EntityModel.of(cultivo);
     }
 
     @GetMapping("{id}")
     @ApiOperation("Retorna os detalhes de um cultivo")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Cultivos encontrado com sucesso"),
-        @ApiResponse(code = 404, message = "Cultivos não encontrado")
+        @ApiResponse(code = 200, message = "Cultivo encontrado com sucesso"),
+        @ApiResponse(code = 404, message = "Cultivo não encontrado")
     })
-    public ResponseEntity<EntityModel<Cultivos>> show(@PathVariable Long id){
+    public Cultivos show(@PathVariable Long id) {
         log.info("Buscando cultivo com id " + id);
-        Cultivos cultivo = getCultivo(id);
-        EntityModel<Cultivos> cultivoModel = getCultivoModel(cultivo);
-        cultivoModel.add(getSelfLink());
-        cultivoModel.add(getUpdateLink(id));
-        cultivoModel.add(getDeleteLink(id));
-        return ResponseEntity.ok(cultivoModel);
+        return getCultivo(id);
     }
 
     @DeleteMapping("{id}")
     @ApiOperation("Exclui um cultivo")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Cultivos encontrado com sucesso"),
-        @ApiResponse(code = 404, message = "Cultivos não encontrado")
+        @ApiResponse(code = 204, message = "Cultivo excluído com sucesso"),
+        @ApiResponse(code = 404, message = "Cultivo não encontrado")
     })
-    public ResponseEntity<Cultivos> destroy(@PathVariable Long id){
+    public void destroy(@PathVariable Long id) {
         log.info("Apagando cultivo com id " + id);
         repository.delete(getCultivo(id));
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("{id}")
     @ApiOperation("Atualiza um cultivo")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Cultivos encontrado com sucesso"),
-        @ApiResponse(code = 404, message = "Cultivos não encontrado")
+        @ApiResponse(code = 200, message = "Cultivo atualizado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
+        @ApiResponse(code = 404, message = "Cultivo não encontrado")
     })
-    public ResponseEntity<EntityModel<Cultivos>> update(@PathVariable Long id, @RequestBody @Valid Cultivos cultivo){
+    public EntityModel<Cultivos> update(@PathVariable Long id, @RequestBody @Valid Cultivos cultivo) {
         log.info("Alterando cultivo com id " + id);
-        getCultivo(id);
-        cultivo.setId(id);
-        Cultivos putObj = repository.save(cultivo);
-        EntityModel<Cultivos> cultivoModel = getCultivoModel(putObj);
-        cultivoModel.add(getSelfLink());
-        cultivoModel.add(getDeleteLink(putObj.getId()));
-        return ResponseEntity.ok(cultivoModel);
+        Cultivos existingCultivo = getCultivo(id);
+        existingCultivo.setId(id);
+        repository.save(existingCultivo);
+        return EntityModel.of(existingCultivo);
     }
 
     private Cultivos getCultivo(Long id) {
         return repository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cultivos não existe"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cultivo não existe"));
     }
-
+    
 }
