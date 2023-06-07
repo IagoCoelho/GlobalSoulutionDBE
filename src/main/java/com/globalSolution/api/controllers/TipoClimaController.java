@@ -1,18 +1,16 @@
 package com.globalSolution.api.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.text.html.parser.Entity;
-
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,83 +27,88 @@ import org.springframework.web.server.ResponseStatusException;
 import com.globalSolution.api.models.TipoClima;
 import com.globalSolution.api.repository.TipoClimaRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/clima")
+@RequestMapping("/api/tipos-clima")
 public class TipoClimaController {
     Logger log = LoggerFactory.getLogger(TipoClimaController.class);
 
-    List<TipoClima> clima = new ArrayList<>();
+    List<TipoClima> tiposClima = new ArrayList<>();
+
+    @Autowired // IoD IoC
+    TipoClimaRepository tipoClimarepository;
 
     @Autowired
-    TipoClimaRepository repository;
+    PagedResourcesAssembler<Object> assembler;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<TipoClima>>> index (@RequestParam(required = false) String TipoClima, @PageableDefault(size = 5) Pageable pageable){
-
-        List<EntityModel<TipoClima>> TipoClimasModel = new ArrayList<>();
-        
-        if(TipoClima == null){
-            List<TipoClima> tipoClimas = repository.findAll(pageable).getContent();
-            for(TipoClima tipoClima : tipoClimas){
-                TipoClimasModel.add(getTipoClimaModel(TipoClima));
-            }
+    @ApiOperation("Retorna uma lista de tipo clima")
+    public ResponseEntity<List<TipoClima>> index(@RequestParam(required = false) TipoClima tipoClima, Pageable pageable) {
+        Page<TipoClima> TiposClimaPage;
+        if (tipoClima == null) {
+            TiposClimaPage = tipoClimarepository.findAll(pageable);
         } else {
-            List<TipoClima> TipoClimas = repository.findByNameContaining(TipoClima, pageable).getContent();
-            for (TipoClima tipoClima : TipoClimas){
-                TipoClimasModel.add(getTipoClimaModel(TipoClima));
-            }
+            TiposClimaPage = tipoClimarepository.findByNameContaining(tipoClima, pageable);
         }
-
-        CollectionModel<EntityModel<TipoClima>> collectionModel = CollectionModel.of(TipoClimasModel);
-        collectionModel.add(getSelfLink());
-        return ResponseEntity.ok(collectionModel);
-
+        List<TipoClima> tiposClima = TiposClimaPage.getContent();
+        return ResponseEntity.ok(tiposClima);
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<TipoClima>> create(@RequestBody @valid TipoClima TipoClima){
-        log.info("Cadastrando grão: " + TipoClima);
-        TipoClima postObj = repository.save(TipoClima);
-        EntityModel<TipoClima> TipoClimaModel = getTipoClimaModel(postObj);
-        TipoClimaModel.add(getSelfLink());
-        TipoClimaModel.add(getupdateLink(postObj.getId()));
-        TipoClimaModel.add(getDeleteLink(postObj.getId()));
-        return ResponseEntity.created(TipoClimaModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(TipoClimaModel);
+    @ApiOperation("Cria um novo tipo de clima ")
+    @ApiResponses({
+        @ApiResponse(code = 201, message = "Tipo clima cadastrado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição")
+    })
+    public EntityModel<TipoClima> create(@RequestBody @Valid TipoClima tipoClima) {
+        log.info("Cadastrando grão: " + tipoClima);
+        tipoClimarepository.save(tipoClima);
+        return EntityModel.of(tipoClima);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EntityModel<TipoClima>> show(@PathVariable Long id){
-        log.info("Buscando TipoClima com id " + id);
-        TipoClima TipoClima = getTipoClima(id);
-        EntityModel<TipoClima> TipoClimaModel = getTipoClimaModel(TipoClima);
-        TipoClimaModel.add(getSelfLink());
-        TipoClimaModel.add(getUpdateLink(id));
-        TipoClimaModel.add(getDeleteLink(id));
-        return ResponseEntity.ok(TipoClimaModel);
+    @ApiOperation("Retorna os detalhes de um clima")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = " Clima encontrado com sucesso"),
+        @ApiResponse(code = 404, message = "Clima não encontrado")
+    })
+    public TipoClima show(@PathVariable Long id) {
+        log.info("Buscando clima com id " + id);
+        return getTipoClima(id);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<TipoClima> destroy(@PathVariable Long id){
-        log.info("Apagando TipoClima com id " + id);
-        repository.delete(getTipoClima(id));
-        return ResponseEntity.noContent().build();
+    @ApiOperation("Exclui um clima")
+    @ApiResponses({
+        @ApiResponse(code = 204, message = "Clima excluído com sucesso"),
+        @ApiResponse(code = 404, message = "Clima não encontrado")
+    })
+    public void destroy(@PathVariable Long id) {
+        log.info("Apagando grão com id " + id);
+        tipoClimarepository.delete(getTipoClima(id));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<EntityModel<TipoClima>> update(@PathVariable Long id, @RequestBody @Valid TipoClima TipoClima){
-        log.info("Alterando TipoClima com id " + id);
-        getTipoClima(id);
-        TipoClima.setId(id);
-        TipoClima putObj = repository.save(TipoClima);
-        EntityModel<TipoClima> TipoClimaModel = getTipoClimaModel(putObj);
-        TipoClimaModel.add(getSelfLink());
-        TipoClimaModel.add(getDeleteLink(putObj.getId()));
-        return ResponseEntity.ok(TipoClima);
+    @ApiOperation("Atualiza um clima")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Clima atualizado com sucesso"),
+        @ApiResponse(code = 400, message = "Erro na validação dos dados da requisição"),
+        @ApiResponse(code = 404, message = "Clima não encontrado")
+    })
+    public EntityModel<TipoClima> update(@PathVariable Long id, @RequestBody @Valid TipoClima tipoClima) {
+        log.info("Alterando clima com id " + id);
+        TipoClima existingTipoClima = getTipoClima(id);
+        existingTipoClima.setId_clima(id);
+        tipoClimarepository.save(existingTipoClima);
+        return EntityModel.of(existingTipoClima);
     }
 
     private TipoClima getTipoClima(Long id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Grão não existe"));
+        return tipoClimarepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Clima não existe"));
+
     }
-    
+
 }
